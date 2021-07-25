@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+	<title>Knoldus Login Form</title>
+	<link rel="stylesheet" type="text/css" href="css/reset.css">
+	<link rel="stylesheet" type="text/css" href="css/structure.css">
+	<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+<form action="/login" method="post" class="box login">
+	<fieldset class="boxBody">
+	
+	  <label>Email</label>
+	  <input type="text" tabindex="1" placeholder="Enter Your Email Address" id="email" name="email" required>
+ 	<label>Password</label>
+	  <input type="password" tabindex="2"  name="password" id="password" required>
+	</fieldset>
+	<footer>
+	
+	  <button>submit</button>
+	
+	</footer>
+
+</form>
+
+<script>
+	const login = (email,password) => {
+		try{
+			axios({
+			method: 'POST',
+			url: 'http://localhost:3000/api/v1/users/login',
+			data: {
+				email,
+				password
+			}
+			 
+		})
+			window.location.href = 'http://localhost:3000/profile';
+		}catch(err){
+			console.log(err);
+		}
+		
+
+	};
+document.querySelector('button').addEventListener('click', (e) => {
+	e.preventDefault();
+	const email = $('#email').val();
+	const password = $('#password').val();
+	login(email,password);
+
+});
+</script>
+</body>
+</html>
