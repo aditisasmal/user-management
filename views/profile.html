@@ -144,6 +144,7 @@ document.querySelector('.logout-user').addEventListener('click', (e) => {
 document.querySelector('.example-user').addEventListener('click', (e) => {
 
   e.preventDefault();
+  
   var userInfo = window.localStorage.getItem('userInfo');
   console.log(userInfo);
   
@@ -160,8 +161,9 @@ document.querySelector('.example-user').addEventListener('click', (e) => {
 
 });
 document.querySelector('.example-admin').addEventListener('click', (e) => {
-
+  
   e.preventDefault();
+  alert('test12');
   var userInfo = window.localStorage.getItem('userInfo');
   console.log(userInfo);
   
@@ -169,7 +171,7 @@ document.querySelector('.example-admin').addEventListener('click', (e) => {
 
       if(location!='')
       {
-        searchLocation(location);
+        saveLocation(location);
       }else{
         alert('Add Location');
       }
