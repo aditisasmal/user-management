@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-	<title>Knoldus Login Form</title>
+	<title> Login Form</title>
 	<link rel="stylesheet" type="text/css" href="css/reset.css">
 	<link rel="stylesheet" type="text/css" href="css/structure.css">
 	<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -28,16 +28,22 @@
 <script>
 	const login = (email,password) => {
 		try{
-			axios({
-			method: 'POST',
-			url: 'http://localhost:3000/api/v1/users/login',
-			data: {
-				email,
-				password
-			}
-			 
-		})
-			window.location.href = 'http://localhost:3000/profile';
+
+			$.ajax({
+					type: "post",
+					url: "http://localhost:3000/api/v1/users/login",
+					data: {
+						email,
+						password
+					},
+					success: function(response){
+						console.log(response.message);
+						window.localStorage.setItem('jwt', response.message);
+						window.localStorage.setItem('userInfo', response.userInfo.type);
+						window.location = "http://localhost:3000/profile";
+					}
+				});
+			
 		}catch(err){
 			console.log(err);
 		}

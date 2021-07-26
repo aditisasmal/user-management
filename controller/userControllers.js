@@ -18,7 +18,8 @@ exports.signup = async (req,res,next) =>
 				Date.now() + process.env.JWT_COOKIE_EXPIRES_IN
 				),
 			secure: true,
-			httpOnly: true
+			httpOnly: true,
+    		secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
 		};
 		res.cookie('jwt',token,cookieOption);
     	res.status(200).json({
@@ -62,9 +63,22 @@ exports.login = async (req,res,next) =>
 			});
 		}
 		const token = jwt.sign({ id: user._id }, process.env.JWT_SECTET, {expiresIn: process.env.JWT_EXPIRES_IN});
+		const cookieOption = {
+			expires: new Date(
+				Date.now() + process.env.JWT_COOKIE_EXPIRES_IN
+				),
+			secure: true,
+			httpOnly: true,
+    		secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
+		};
+		res.cookie('jwt',token,cookieOption);
+		const decoded   = await promisify(jwt.verify)(token, process.env.JWT_SECTET);
+
+		const freshuser = await User.findOne({_id:decoded.id});
 		res.status(200).json({
 							status: 'true',
-							message: token
+							message: token,
+							userInfo: freshuser
 						});
 		console.log(token);
     	
@@ -81,21 +95,22 @@ exports.login = async (req,res,next) =>
 exports.protected = async(req,res,next) =>
 {
 	try{
-	let token;
+	let token12;
 
 	if(req.headers.authorization)
 	{
-		token = req.headers.authorization.split(' ')[1];
+		token12 = req.headers.authorization.split(' ')[1];
 	}else{
 		res.status(400).json({
 			status: 'fail',
 				message: "wrong token"
 			});
 	}
+	
+	const decoded   = await promisify(jwt.verify)(token12, process.env.JWT_SECTET);
 
-	const decoded   = await promisify(jwt.verify)(token, process.env.JWT_SECTET);
-
-	const freshuser = await User.findOne(decoded._id);
+	const freshuser = await User.findOne({_id:decoded.id});
+	console.log(freshuser);
 	if(!freshuser)
 		{
 			res.status(400).json({
@@ -149,41 +164,37 @@ exports.savelocation = async(req,res,next) =>
 exports.searchlocation = async(req,res,next) =>
 {
 	try{
-	
+		
 		req.body.user = req.user.id;
 		
-		const location = await Location.find({$and:[
+		const location = await Location.find(
    		{
      		city:
        		{ $near :
           		{
             		$geometry: { type: "Point",  coordinates: req.body.city.coordinates },
-            		$maxDistance: 10000
+            		$maxDistance: 100000
           		}
        		}
-   		},{ user: { $exists: true, $ne: [] } }]}).populate({ path: 'user', match: { type: { $eq: 'Admin' }}}).exec((err, loc) => {
-   			if(loc!=undefined){
-   				loc.forEach(function(single_a){
-   					if((single_a.user).length>0)
-   					{
-   						res.status(200).json({
-							status: 'true',
-							message: "found location"
-						});
-   					}else{
-   						res.status(200).json({
-							status: 'fail',
-							message: "location not found"
-						});
-   					}
-   				})
-   			}else{
-   				res.status(200).json({
-							status: 'fail',
-							message: "location not found"
-						});
-   			}})
-   			}catch(err){
+   		});
+
+
+		if((location).length>0)
+   		{
+   			res.status(200).json({
+			status: 'true',
+			message: "location available"
+		})
+   		}else{
+   			res.status(200).json({
+			status: 'false',
+			message: "location not found "
+   		})
+   		}
+
+   		console.log(location);
+
+   		}catch(err){
 		res.status(400).json({
 			status: 'fail',
 			message: err

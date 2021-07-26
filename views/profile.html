@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="description" content="">
-	<title>Knoldus Login Form</title>
+	<title> Login Form</title>
 
 <link rel="stylesheet" type="text/css" href="/css/reset.css" />
 <link rel="stylesheet" type="text/css" href="/css/structure.css" />
 
 <link rel="stylesheet"
 	href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" />
-
+<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <style>
 
  
@@ -68,28 +68,195 @@ li a:hover {
         <div id="menu">
           <fieldset class="">
             <ul class="menu">
-              <li><label><a href="/user">
-                           <span>Profile</span>
-                         </a></label></li>
-              <li><label><a href="/profile">
-                           <span>Friend List</span>
-                         </a></label></li>
-              <li><label><a href="/password">
-                           <span>Password Setting</span>
-                         </a></label></li>
-              <li><label><a href="/reminder">
-                           <span>Birthday Reminder</span>
-                         </a></label></li>
-              <li><label><a href="/chat">
-                           <span>Chat</span>
-                         </a></label></li>
               <li><label><a href="/logout">
-                           <span>Log Out</span>
+                           <span class="logout-user">Log Out</span>
                          </a></label></li>
             </ul>
           </fieldset>
         </div>
+        <div class="adminSec">
+        <form action="/saveLocation" method="post" class="box login ">
+  <fieldset class="boxBody">
+  
+    <label>Save Location</label>
+    <input type="text" tabindex="1" placeholder="Location" id="location" name="location" required>
+    <!-- <label>latitude</label>
+    <input type="text" tabindex="1" placeholder="latitude" id="latitude" name="latitude" required>
+    <label>longitude</label>
+    <input type="text" tabindex="1" placeholder="longitude" id="longitude" name="longitude" required> -->
+    
+ 
+  <footer>
+  
+    <button class="example-admin">submit</button>
+  
+  </footer>
 
+</form>
+</div>
+<div class="userSec">
+<form action="/search" method="post" class="box login ">
+  <fieldset class="boxBody">
+    <label>Search Location</label>
+    <input type="text" tabindex="1" placeholder="Location" id="search-location" name="location" required>
+  </fieldset>
+  <footer>
+  
+    <button class="example-user">submit</button>
+  
+  </footer>
+
+</form>
+</div>
+<script>
+  
+  $( document ).ready(function() {
+    var jwt = window.localStorage.getItem('jwt');
+    var userInfo = window.localStorage.getItem('userInfo');
+    if(jwt==undefined) 
+    {
+       window.location = "http://localhost:3000";
+    }else{
+     
+      if(userInfo=='Admin')
+      {
+        $('.userSec').hide();
+      }else{
+        $('.adminSec').hide();
+      }
+    }
+   
+});
+document.querySelector('.logout-user').addEventListener('click', (e) => {
+  e.preventDefault();
+  $.ajax({
+                type: "get",
+                url: "http://localhost:3000/api/v1/users/logout",
+                success: function(response){
+                  localStorage.removeItem('jwt');
+                  localStorage.removeItem('userInfo');
+                  window.location = "http://localhost:3000";
+                }
+              });
+
+});
+
+document.querySelector('.example-user').addEventListener('click', (e) => {
+
+  e.preventDefault();
+  var userInfo = window.localStorage.getItem('userInfo');
+  console.log(userInfo);
+  
+      const location  = $('#search-location').val();
+      if(location!='')
+      {
+        searchLocation(location);
+      }else{
+        alert('Add Location');
+      }
+      
+
+  
+
+});
+document.querySelector('.example-admin').addEventListener('click', (e) => {
+
+  e.preventDefault();
+  var userInfo = window.localStorage.getItem('userInfo');
+  console.log(userInfo);
+  
+      const location  = $('#location').val();
+
+      if(location!='')
+      {
+        searchLocation(location);
+      }else{
+        alert('Add Location');
+      }
+
+  
+
+});
+const saveLocation = (location) => {
+  
+$.ajax({
+          type: "get",
+          url: "http://api.positionstack.com/v1/forward?access_key=b4e1822ed069c81d702884d9934a5d22&query="+location,
+         
+          success: function(response){
+
+            if(response.data.length>0)
+            {
+              var lat = response.data[0].latitude;
+              var lon = response.data[0].longitude;
+
+              $.ajax({
+                type: "post",
+                url: "http://localhost:3000/api/v1/users/save-location",
+                data: {
+                  "location": location,
+                  "city": {
+                  "coordinates": [lat, lon],
+                  "type": "Point"
+                  }
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader ("Authorization", "Basic " + window.localStorage.getItem('jwt'));
+                },
+                success: function(response){
+                  alert('Save Location');
+                }
+              });
+           
+            }else{
+              alert('wrong loation');
+            }
+          }
+        });
+
+}
+
+const searchLocation = (location) => {
+  
+$.ajax({
+          type: "get",
+          url: "http://api.positionstack.com/v1/forward?access_key=b4e1822ed069c81d702884d9934a5d22&query="+location,
+         
+          success: function(response){
+
+            if(response.data.length>0)
+            {
+              var lat = response.data[0].latitude;
+              var lon = response.data[0].longitude;
+              console.log(lat);
+              console.log(lon);
+              $.ajax({
+                type: "post",
+                url: "http://localhost:3000/api/v1/users/search-location",
+                data: {
+                  "location": location,
+                  "city": {
+                  "coordinates": [lat, lon],
+                  "type": "Point"
+                  }
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader ("Authorization", "Basic " + window.localStorage.getItem('jwt'));
+                },
+                success: function(response){
+                  alert(response.message);
+                }
+              });
+           
+            }else{
+              alert('wrong loation');
+            }
+          }
+        });
+
+}
+
+</script>
 
 
 
