@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -23,6 +24,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.3",
     "node-geocoder": "^3.27.0",
+    "nodemon": "^2.0.12",
     "pug": "^3.0.2",
     "util.promisify": "^1.1.1"
   }
