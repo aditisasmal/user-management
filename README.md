@@ -15,4 +15,5 @@ Password : 12345678
 1. git clone https://github.com/aditisasmal/user-management.git 
 2. cd user-management/
 2. npm install
-3. url: http://localhost:3000/
+3. npm start
+4. url: http://localhost:3000/
