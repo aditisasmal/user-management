@@ -115,7 +115,7 @@ li a:hover {
     var userInfo = window.localStorage.getItem('userInfo');
     if(jwt==undefined) 
     {
-       window.location = "http://localhost:3000";
+       window.location = "/";
     }else{
      
       if(userInfo=='Admin')
@@ -131,11 +131,11 @@ document.querySelector('.logout-user').addEventListener('click', (e) => {
   e.preventDefault();
   $.ajax({
                 type: "get",
-                url: "http://localhost:3000/api/v1/users/logout",
+                url: "api/v1/users/logout",
                 success: function(response){
                   localStorage.removeItem('jwt');
                   localStorage.removeItem('userInfo');
-                  window.location = "http://localhost:3000";
+                  window.location = "/";
                 }
               });
 
@@ -193,7 +193,7 @@ $.ajax({
 
               $.ajax({
                 type: "post",
-                url: "http://localhost:3000/api/v1/users/save-location",
+                url: "/api/v1/users/save-location",
                 data: {
                   "location": location,
                   "city": {
@@ -233,7 +233,7 @@ $.ajax({
               console.log(lon);
               $.ajax({
                 type: "post",
-                url: "http://localhost:3000/api/v1/users/search-location",
+                url: "/api/v1/users/search-location",
                 data: {
                   "location": location,
                   "city": {
