@@ -41,6 +41,6 @@ mongoose.connect(DB,{
     useUnifiedTopology: true 
 }).then(() => console.log('connect successfull'));
 
-app.listen(3000, () => {
-  console.log("Server is now running!");
+app.listen(process.env.PORT || 3000, function(){
+  console.log("Express server listening on port");
 });
