@@ -182,6 +182,7 @@ const saveLocation = (location) => {
   
 $.ajax({
           type: "get",
+          dataType: "jsonp",
           crossOrigin: true,
           url: "http://api.positionstack.com/v1/forward?access_key=b4e1822ed069c81d702884d9934a5d22&query="+location,
          
@@ -222,6 +223,7 @@ const searchLocation = (location) => {
   
 $.ajax({
           type: "get",
+          dataType: "jsonp",
           crossOrigin: true,
           url: "http://api.positionstack.com/v1/forward?access_key=b4e1822ed069c81d702884d9934a5d22&query="+location,
          
